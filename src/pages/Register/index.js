@@ -1,11 +1,10 @@
-import { Div, Title } from "./styles";
-
+import * as S from './styles';
 export default function Register(){
   return(
   <>
-  <Div>
-    <Title>Register</Title>
-  </Div>
+  <S.Div>
+    <S.Title>Register</S.Title>
+  </S.Div>
   </>
   )
 }
