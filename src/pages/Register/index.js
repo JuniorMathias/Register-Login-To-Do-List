@@ -1,22 +1,33 @@
+import { useState } from 'react'
 import * as S from './styles';
-import { useState } from "react";
-
+import { auth } from '../../firebaseConnection'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { useNavigate } from 'react-router-dom'
 
 export default function Register(){
-const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const navigate = useNavigate();
 
-function handleRegister(e){
-  e.preventDefault();
-  if(email !== '' && password !== ''){
-    alert("You are logged in.");
-    setEmail("");
-    setPassword("");
-  }else{
-    alert("Fill in email and password.");
+  async function handleRegister(e){
+    e.preventDefault();
+
+    if(email !== '' && password !== ''){
+      await createUserWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        navigate('/admin', { replace: true })
+      })
+      .catch((error) => {
+        console.log("Error creating" + error.message)
+      })
+
+
+    }else{
+      alert("Preencha todos os campos!")
+    }
+
+
   }
-}
-
 
 
   return(
@@ -33,7 +44,6 @@ function handleRegister(e){
         onChange={(e) => setEmail(e.target.value)}
       />
       <S.Input
-        autoComplete={false}
         type="password"
         placeholder="******"
         value={password}

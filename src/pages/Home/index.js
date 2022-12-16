@@ -1,22 +1,37 @@
 import * as S from './styles';
-import { useState } from "react";
+import { useState } from 'react'
 
+import { auth } from '../../firebaseConnection'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+
+import { useNavigate } from 'react-router-dom'
 
 export default function Home(){
-const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  
+  const navigate = useNavigate();
 
-function handleLogin(e){
-  e.preventDefault();
-  if(email !== '' && password !== ''){
-    alert("You are logged in.");
-    setEmail("");
-    setPassword("");
-  }else{
-    alert("Fill in email and password.");
+  async function handleLogin(e){
+    e.preventDefault();
+
+    if(email !== '' && password !== ''){
+      
+      await signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        // navegate to /admin
+        navigate('/admin', { replace: true } )
+      })
+      .catch(() => {
+        alert("ERROR TO LOGIN")
+      })
+
+    }else{
+      alert("Fill in your email and password")
+    }
+
+
   }
-}
-
 
 
   return(
@@ -33,7 +48,6 @@ function handleLogin(e){
         onChange={(e) => setEmail(e.target.value)}
       />
       <S.Input
-        autoComplete={false}
         type="password"
         placeholder="******"
         value={password}
