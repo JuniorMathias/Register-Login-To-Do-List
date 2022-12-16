@@ -23,11 +23,11 @@ export default function Home(){
         navigate('/admin', { replace: true } )
       })
       .catch(() => {
-        alert("ERROR TO LOGIN")
+        alert("Something went wrong with your login. Please try again")
       })
 
     }else{
-      alert("Fill in your email and password")
+      alert("Please, Fill in your email and password")
     }
 
 
