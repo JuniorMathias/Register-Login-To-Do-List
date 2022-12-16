@@ -3,17 +3,33 @@ import { useState, useEffect } from 'react';
 import { auth, db } from '../../firebaseConnection';
 import { signOut } from 'firebase/auth'; 
 
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, onSnapshot, query, orderBy, where, doc, deleteDoc } from 'firebase/firestore';
 
 export default function Admin(){
   const [taskInput, setTaskInput] = useState('');
   const [user, setUser] = useState({});
-
+  const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
       async function loadTasks(){
           const userDetail = localStorage.getItem("@detailUser");
           setUser(JSON.parse(userDetail))
+          if(userDetail){
+            const data = JSON.parse(userDetail);
+            const taskRef = collection(db, "tasks");
+            const q = query(taskRef, orderBy("created", "desc"), where("userUid", "==", data?.uid));
+            const unsub = onSnapshot(q, (snapshot) => {
+                let list = [];
+                snapshot.forEach((doc) => {
+                    list.push({
+                      id: doc.id,
+                      task: doc.data().task,
+                      userUid: doc.data().userUid,
+                    })
+            })
+            setTasks(list);
+          })
+        } 
       }
       loadTasks();
      }, [])
@@ -29,7 +45,7 @@ export default function Admin(){
           task: taskInput,
           created: new Date(),
           userUid: user?.uid
-          
+
       })
       .then(() => {
         alert("Your task has been registered");
@@ -41,6 +57,10 @@ export default function Admin(){
   }
   async  function handleLoagout(e){
     await signOut(auth);
+}
+async function deleteTask(id){
+    const docRef = doc(db, "tasks", id);
+    await deleteDoc(docRef);
 }
 
     return(
@@ -55,15 +75,18 @@ export default function Admin(){
           />
           <S.Button type="submit">Register Tasks</S.Button>
         </S.Form>
-        <S.Article>
+        {tasks.map((item) => (
+        <S.Article key={item.id}>
+
             <S.Paragraph>
-                Study JavaScript and ReactJs tonight
+               {item.task}
             </S.Paragraph>
             <S.Buttons>
                 <S.ButtonEdit>Edit</S.ButtonEdit>
-                <S.ButtonDone>Done</S.ButtonDone>
+                <S.ButtonDone onClick={ () => deleteTask(item.id)}>Done</S.ButtonDone>
             </S.Buttons>
         </S.Article>
+        ))}
         <S.ButtonLogout onClick={handleLoagout}>Log out</S.ButtonLogout>
 
         </S.Container>
