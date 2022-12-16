@@ -1,15 +1,43 @@
 import * as S from './styles';
-import { useState } from 'react';
-import { auth } from '../../firebaseConnection';
+import { useState, useEffect } from 'react';
+import { auth, db } from '../../firebaseConnection';
 import { signOut } from 'firebase/auth'; 
+
+import { addDoc, collection } from 'firebase/firestore';
 
 export default function Admin(){
   const [taskInput, setTaskInput] = useState('');
+  const [user, setUser] = useState({});
 
 
-  function handleRegister(e){
+  useEffect(() => {
+      async function loadTasks(){
+          const userDetail = localStorage.getItem("@detailUser");
+          setUser(JSON.parse(userDetail))
+      }
+      loadTasks();
+     }, [])
+
+
+  async function handleRegister(e){
       e.preventDefault();
-      alert("click");
+      if(taskInput === ''){
+          alert("Type your task...");
+          return;
+      }
+      await addDoc(collection(db, "tasks"),{
+          task: taskInput,
+          created: new Date(),
+          userUid: user?.uid
+          
+      })
+      .then(() => {
+        alert("Your task has been registered");
+        setTaskInput('');
+      })
+      .catch((error) => {
+          alert("Something went wrong, please try again" + error)
+      })
   }
   async  function handleLoagout(e){
     await signOut(auth);
