@@ -2,6 +2,7 @@ import * as S from './styles';
 import { useState, useEffect } from 'react';
 import { auth, db } from '../../firebaseConnection';
 import { signOut } from 'firebase/auth'; 
+import { toast } from 'react-toastify';
 
 import {
     addDoc, 
@@ -48,7 +49,7 @@ export default function Admin(){
   async function handleRegister(e){
       e.preventDefault();
       if(taskInput === ''){
-          alert("Type your task...");
+          toast.error("Type your task...");
           return;
       }
 
@@ -64,11 +65,11 @@ export default function Admin(){
 
       })
       .then(() => {
-        alert("Your task has been registered");
+        toast.success("Your task has been registered");
         setTaskInput('');
       })
       .catch((error) => {
-          alert("Something went wrong, please try again" + error)
+        toast.warn("Something went wrong, please try again" + error)
       })
   }
   async  function handleLoagout(e){
@@ -77,6 +78,7 @@ export default function Admin(){
 async function deleteTask(id){
     const docRef = doc(db, "tasks", id);
     await deleteDoc(docRef);
+    toast.success("Task has been deleted");
 }
 function editTask(item){
     setTaskInput(item.task);
@@ -88,12 +90,12 @@ async function handleUpdateTask(){
         task: taskInput
     })
     .then(() => {
-        alert ("Task updated");
+       toast.success("Task updated");
         setTaskInput('');
         setEdit({});
     })
     .catch((error) => {
-        alert("Error to Update, please try again" + error);
+        toast.warn("Error to Update, please try again" + error);
         setTaskInput('');
         setEdit({});
     });

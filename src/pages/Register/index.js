@@ -3,6 +3,7 @@ import * as S from './styles';
 import { auth } from '../../firebaseConnection'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify';
 
 export default function Register(){
   const [email, setEmail] = useState('')
@@ -23,7 +24,7 @@ export default function Register(){
 
 
     }else{
-      alert("Preencha todos os campos!")
+      toast.warn("fill in email and password");
     }
 
 

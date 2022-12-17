@@ -1,6 +1,6 @@
 import * as S from './styles';
 import { useState } from 'react'
-
+import { toast } from 'react-toastify';
 import { auth } from '../../firebaseConnection'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 
@@ -23,11 +23,11 @@ export default function Home(){
         navigate('/admin', { replace: true } )
       })
       .catch(() => {
-        alert("Something went wrong with your login. Please try again")
+        toast.error("Something went wrong with your login. Please try again")
       })
 
     }else{
-      alert("Please, Fill in your email and password")
+      toast.warn("Please, Fill in your email and password")
     }
 
 
