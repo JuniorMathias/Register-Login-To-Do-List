@@ -3,12 +3,22 @@ import { useState, useEffect } from 'react';
 import { auth, db } from '../../firebaseConnection';
 import { signOut } from 'firebase/auth'; 
 
-import { addDoc, collection, onSnapshot, query, orderBy, where, doc, deleteDoc } from 'firebase/firestore';
+import {
+    addDoc, 
+    collection,
+    onSnapshot,
+    query,
+    orderBy,
+    where,
+    doc,
+    deleteDoc,
+    updateDoc } from 'firebase/firestore';
 
 export default function Admin(){
   const [taskInput, setTaskInput] = useState('');
   const [user, setUser] = useState({});
   const [tasks, setTasks] = useState([]);
+  const [edit, setEdit] = useState({});
 
   useEffect(() => {
       async function loadTasks(){
@@ -41,6 +51,12 @@ export default function Admin(){
           alert("Type your task...");
           return;
       }
+
+      if(edit?.id){
+        handleUpdateTask();
+        return;
+      }
+
       await addDoc(collection(db, "tasks"),{
           task: taskInput,
           created: new Date(),
@@ -62,7 +78,26 @@ async function deleteTask(id){
     const docRef = doc(db, "tasks", id);
     await deleteDoc(docRef);
 }
-
+function editTask(item){
+    setTaskInput(item.task);
+    setEdit(item);
+}
+async function handleUpdateTask(){
+    const docRef = doc(db, "tasks", edit?.id)
+    await updateDoc(docRef, {
+        task: taskInput
+    })
+    .then(() => {
+        alert ("Task updated");
+        setTaskInput('');
+        setEdit({});
+    })
+    .catch((error) => {
+        alert("Error to Update, please try again" + error);
+        setTaskInput('');
+        setEdit({});
+    });
+}
     return(
         <S.Container>
         <S.Header>My Tasks</S.Header>
@@ -73,7 +108,11 @@ async function deleteTask(id){
             value={taskInput}
             onChange={(e) => setTaskInput(e.target.value)}
           />
-          <S.Button type="submit">Register Tasks</S.Button>
+          {Object.keys(edit).length > 0 ?(
+            <S.Button type="submit">Update Task</S.Button> 
+          ) : (
+            <S.Button type="submit">Add Task</S.Button>
+          )}
         </S.Form>
         {tasks.map((item) => (
         <S.Article key={item.id}>
@@ -82,8 +121,8 @@ async function deleteTask(id){
                {item.task}
             </S.Paragraph>
             <S.Buttons>
-                <S.ButtonEdit>Edit</S.ButtonEdit>
-                <S.ButtonDone onClick={ () => deleteTask(item.id)}>Done</S.ButtonDone>
+                <S.ButtonEdit onClick={() => editTask(item)}>Edit</S.ButtonEdit>
+                <S.ButtonDelete onClick={ () => deleteTask(item.id)}>Delete</S.ButtonDelete>
             </S.Buttons>
         </S.Article>
         ))}

@@ -65,7 +65,7 @@ export const ButtonEdit = styled.button`
   font-size: 15px;
 `;
 
-export const ButtonDone = styled.button`
+export const ButtonDelete = styled.button`
   color: #ffcc23;
   background-color: transparent;
   margin-right: 8px;
