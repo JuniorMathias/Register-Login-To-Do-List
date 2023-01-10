@@ -3,7 +3,7 @@ import { getFirestore} from 'firebase/firestore';
 import { getAuth } from'firebase/auth';
 
 const firebaseConfig = {
-    apiKey: process.env.API_KEY,
+    apiKey: 'AIzaSyDDYH39CAxe0y0Pwd11Tb_8hevu4xgS_d0',
     authDomain: "react-courses01.firebaseapp.com",
     projectId: "react-courses01",
     storageBucket: "react-courses01.appspot.com",
